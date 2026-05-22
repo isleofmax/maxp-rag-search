@@ -1,16 +1,19 @@
 from .config import ITEM_LIMIT, MOVIE_FILE, STOP_WORDS_FILE
 import json
 import string
+from nltk.stem import PorterStemmer
 
 def search_command(query) -> list[str]:
     list_movie   = []
     query_tokens = []
     title_tokens = []
     n_movies = 1
+    stemmer = PorterStemmer()
     preprocessed_words = preprocess_list_words(read_stop_words())
     preprocessed_query = preprocess_str(query)
     query_tokens = tokenize_str(preprocessed_query)
     query_tokens = filter_tokens(query_tokens, preprocessed_words)
+    query_stemmed_tokens = stem_tokens(stemmer, query_tokens)
 
     with open(MOVIE_FILE,"r") as file:
         json_data = json.load(file)
@@ -19,7 +22,8 @@ def search_command(query) -> list[str]:
             preprocessed_title = preprocess_str(movie_title)
             title_tokens = tokenize_str(preprocessed_title)
             title_tokens = filter_tokens(title_tokens, preprocessed_words)
-            if test_tokens(query_tokens, title_tokens):
+            stemmed_tokens = stem_tokens(stemmer, title_tokens)
+            if test_tokens(query_stemmed_tokens, stemmed_tokens):
                 if n_movies > ITEM_LIMIT:
                     break
                 list_movie.append(movie_title)
@@ -59,6 +63,13 @@ def filter_tokens(input_tokens: list[str], stop_words: list[str]) -> list[str]:
             output_list.append(itoken)
 
     return output_list
+
+
+def stem_tokens(stemmer: PorterStemmer, tokens: list[str]) -> list[str]:
+    stemmed_tokens = []
+    for token in tokens:
+        stemmed_tokens.append(stemmer.stem(token))
+    return stemmed_tokens
 
 
 def test_tokens(query: list[str], title: list[str]) -> bool:
