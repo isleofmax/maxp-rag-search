@@ -9,6 +9,8 @@ def main() -> None:
     search_parser = subparser.add_parser("search", help="Search movies using BM25")
     search_parser.add_argument("query", type=str, help="Search query")
 
+    subparser.add_parser("build", help="Build the inverted index")
+
     args = parser.parse_args()
     match args.command:
         case "search":
@@ -16,6 +18,8 @@ def main() -> None:
             results = search_command(args.query)
             for num, res in enumerate(results, start=1):
                 print(f"{num}. {res}")
+        case "build":
+            print("Build the inverted index")
         case _:
             parser.print_help()
 
