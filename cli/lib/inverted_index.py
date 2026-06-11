@@ -1,6 +1,7 @@
 from .config import MOVIE_FILE, INDEX_FILE, DOCMAP_FILE
 from .keyword_search import filter_tokens, preprocess_str, preprocess_list_words, read_stop_words, tokenize_str 
 import json
+import pickle
 
 class InvertedIndex():
     def __init__(self):
@@ -27,10 +28,10 @@ class InvertedIndex():
                 self.docmap[doc_id] = movie
     
     def save(self) -> None:
-        with open(INDEX_FILE, "w") as file:
-            json.dump(self.index, file)
+        with open(INDEX_FILE, "wb") as file:
+            pickle.dump(self.index, file)
 
-        with open(DOCMAP_FILE, "w") as file:
-            json.dump(self.docmap, file)
+        with open(DOCMAP_FILE, "wb") as file:
+            pickle.dump(self.docmap, file)
 
         
